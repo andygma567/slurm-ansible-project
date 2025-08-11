@@ -1,0 +1,6 @@
+---
+- name: Slurm all in One
+  hosts: all
+  become: true
+  roles:
+    - role: galaxyproject.slurm

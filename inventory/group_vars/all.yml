@@ -1,2 +1,22 @@
 ansible_ssh_private_key_file: ~/.ssh/id_ed25519
 ansible_python_interpreter: /usr/bin/python3
+
+# Single node defined logically as "node1"
+slurm_nodes:
+  - name: node1
+    NodeHostname: "{{ hostvars['node1'].ansible_hostname }}"
+    CPUs: "{{ hostvars['node1'].ansible_facts['processor_vcpus'] | default(1) }}"
+    RealMemory: "{{ (hostvars['node1'].ansible_facts['memtotal_mb'] | default(2000)) - 100 }}"
+slurm_partitions:
+  - name: debug
+    Nodes: node1
+    Default: YES
+    State: UP
+slurm_config:
+  ClusterName: cluster
+  ControlMachine: "{{ hostvars['node1'].ansible_hostname }}"
+  AccountingStorageType: accounting_storage/none
+  StateSaveLocation: /var/lib/slurm/slurmctld
+  SlurmdSpoolDir: /var/lib/slurm/slurmd
+  MailProg: /bin/true
+slurm_create_dirs: true
