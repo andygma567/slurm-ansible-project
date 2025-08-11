@@ -1,0 +1,12 @@
+---
+- name: Simple connectivity check
+  hosts: all
+  become: true
+  gather_facts: true 
+  tasks:
+    - name: Ping each node
+      ansible.builtin.ping:
+
+    - name: Show custom ping message
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} responded. Message: {{ ping_message | default('No message set') }}"
