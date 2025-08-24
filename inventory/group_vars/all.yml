@@ -7,16 +7,25 @@ slurm_nodes:
     NodeHostname: "{{ hostvars['node1'].ansible_hostname }}"
     CPUs: "{{ hostvars['node1'].ansible_facts['processor_vcpus'] | default(1) }}"
     RealMemory: "{{ (hostvars['node1'].ansible_facts['memtotal_mb'] | default(2000)) - 100 }}"
+
 slurm_partitions:
   - name: debug
     Nodes: node1
     Default: YES
     State: UP
+
 slurm_config:
   ClusterName: cluster
   ControlMachine: "{{ hostvars['node1'].ansible_hostname }}"
-  AccountingStorageType: accounting_storage/none
+  # — Enable database-backed accounting through SlurmDBD —
+  AccountingStorageType: accounting_storage/slurmdbd
+  AccountingStorageHost: "{{ hostvars['node1'].ansible_hostname }}"
+  AccountingStoragePort: 6819
+  # Recommended so Slurm actually gathers per-job stats:
+  JobAcctGatherType: jobacct_gather/linux
+  # Usual housekeeping:
   StateSaveLocation: /var/lib/slurm/slurmctld
   SlurmdSpoolDir: /var/lib/slurm/slurmd
   MailProg: /bin/true
+
 slurm_create_dirs: true
